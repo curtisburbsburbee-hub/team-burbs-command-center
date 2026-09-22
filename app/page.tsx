@@ -1,65 +1,211 @@
-import Image from "next/image";
-
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main
+      style={{
+        minHeight: "100vh",
+        background: "#f4f6f8",
+        color: "#17202a",
+        padding: "32px",
+        fontFamily: "Arial, sans-serif",
+      }}
+    >
+      <div
+        style={{
+          maxWidth: "1500px",
+          margin: "0 auto",
+        }}
+      >
+        <header
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-end",
+            marginBottom: "32px",
+            gap: "20px",
+          }}
+        >
+          <div>
+            <div
+              style={{
+                fontSize: "13px",
+                fontWeight: 700,
+                letterSpacing: "1.5px",
+                color: "#68737d",
+                marginBottom: "8px",
+              }}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              TEAM BURBS | BOWDEN
+            </div>
+
+            <h1
+              style={{
+                fontSize: "36px",
+                margin: 0,
+                lineHeight: 1.1,
+              }}
             >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+              Command Center
+            </h1>
+
+            <p
+              style={{
+                color: "#68737d",
+                marginTop: "10px",
+                marginBottom: 0,
+              }}
+            >
+              Your real estate business — prioritized by AI.
+            </p>
+          </div>
+
+          <div
+            style={{
+              background: "#ffffff",
+              border: "1px solid #e1e5e8",
+              borderRadius: "12px",
+              padding: "12px 16px",
+              fontSize: "14px",
+            }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+            ● Systems Online
+          </div>
+        </header>
+
+        <section
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+            gap: "16px",
+            marginBottom: "32px",
+          }}
+        >
+          <StatCard label="Do Now" value="—" />
+          <StatCard label="Revenue Next" value="—" />
+          <StatCard label="Waiting / Watching" value="—" />
+          <StatCard label="Completed" value="—" />
+        </section>
+
+        <section
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+            gap: "20px",
+          }}
+        >
+          <DashboardColumn
+            title="Do Now"
+            subtitle="Urgent, overdue and high-priority work"
+          />
+
+          <DashboardColumn
+            title="Revenue Next"
+            subtitle="Leads and opportunities that move business forward"
+          />
+
+          <DashboardColumn
+            title="Waiting / Watching"
+            subtitle="Items waiting on someone else or being monitored"
+          />
+
+          <DashboardColumn
+            title="Recently Completed"
+            subtitle="Work the Command Center has closed"
+          />
+        </section>
+      </div>
+    </main>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div
+      style={{
+        background: "#ffffff",
+        border: "1px solid #e1e5e8",
+        borderRadius: "14px",
+        padding: "20px",
+      }}
+    >
+      <div
+        style={{
+          color: "#68737d",
+          fontSize: "13px",
+          fontWeight: 600,
+          marginBottom: "8px",
+        }}
+      >
+        {label}
+      </div>
+
+      <div
+        style={{
+          fontSize: "30px",
+          fontWeight: 700,
+        }}
+      >
+        {value}
+      </div>
+    </div>
+  );
+}
+
+function DashboardColumn({
+  title,
+  subtitle,
+}: {
+  title: string;
+  subtitle: string;
+}) {
+  return (
+    <div
+      style={{
+        background: "#ffffff",
+        border: "1px solid #e1e5e8",
+        borderRadius: "14px",
+        minHeight: "300px",
+        padding: "20px",
+      }}
+    >
+      <h2
+        style={{
+          fontSize: "18px",
+          marginTop: 0,
+          marginBottom: "6px",
+        }}
+      >
+        {title}
+      </h2>
+
+      <p
+        style={{
+          color: "#68737d",
+          fontSize: "13px",
+          marginTop: 0,
+        }}
+      >
+        {subtitle}
+      </p>
+
+      <div
+        style={{
+          marginTop: "32px",
+          padding: "24px",
+          border: "1px dashed #cdd3d8",
+          borderRadius: "10px",
+          textAlign: "center",
+          color: "#89939c",
+          fontSize: "14px",
+        }}
+      >
+        Live actions coming next
+      </div>
     </div>
   );
 }
