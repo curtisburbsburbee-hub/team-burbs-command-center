@@ -1,4 +1,59 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "../lib/supabase";
+
 export default function Home() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    async function checkUser() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        router.replace("/login");
+        return;
+      }
+
+      setEmail(user.email ?? "");
+      setLoading(false);
+    }
+
+    checkUser();
+  }, [router]);
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.replace("/login");
+    router.refresh();
+  }
+
+  if (loading) {
+    return (
+      <main
+        style={{
+          minHeight: "100vh",
+          background: "#f4f6f8",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontFamily: "Arial, sans-serif",
+          color: "#68737d",
+        }}
+      >
+        Loading Command Center...
+      </main>
+    );
+  }
+
   return (
     <main
       style={{
@@ -22,6 +77,7 @@ export default function Home() {
             alignItems: "flex-end",
             marginBottom: "32px",
             gap: "20px",
+            flexWrap: "wrap",
           }}
         >
           <div>
@@ -60,14 +116,38 @@ export default function Home() {
 
           <div
             style={{
-              background: "#ffffff",
-              border: "1px solid #e1e5e8",
-              borderRadius: "12px",
-              padding: "12px 16px",
-              fontSize: "14px",
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              flexWrap: "wrap",
             }}
           >
-            ● Systems Online
+            <div
+              style={{
+                background: "#ffffff",
+                border: "1px solid #e1e5e8",
+                borderRadius: "12px",
+                padding: "12px 16px",
+                fontSize: "13px",
+              }}
+            >
+              Signed in as {email}
+            </div>
+
+            <button
+              onClick={handleSignOut}
+              style={{
+                background: "#17202a",
+                color: "#ffffff",
+                border: "none",
+                borderRadius: "10px",
+                padding: "12px 16px",
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
+            >
+              Sign Out
+            </button>
           </div>
         </header>
 
