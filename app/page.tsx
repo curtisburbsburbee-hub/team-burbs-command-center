@@ -25,10 +25,8 @@ export default function Home() {
   const [actions, setActions] = useState<Action[]>([]);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const supabase = createClient();
-
-    async function loadDashboard() {
+  const loadDashboard = async () => {
+  const supabase = createClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -57,10 +55,44 @@ export default function Home() {
 
       setActions((data ?? []) as Action[]);
       setLoading(false);
+    };
+
+  useEffect(() => {
+  const supabase = createClient();
+
+  async function initialLoad() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      router.replace("/login");
+      return;
     }
 
-    loadDashboard();
-  }, [router]);
+    setEmail(user.email ?? "");
+
+    const { data, error } = await supabase
+      .from("actions")
+      .select(
+        "id,title,description,owner,state,priority,due_at,completed_at,updated_at,created_at"
+      )
+      .order("updated_at", { ascending: false })
+      .limit(100);
+
+    if (error) {
+      console.error(error);
+      setError(error.message);
+      setLoading(false);
+      return;
+    }
+
+    setActions((data ?? []) as Action[]);
+    setLoading(false);
+  }
+
+  initialLoad();
+}, [router]);
 
   async function handleSignOut() {
     const supabase = createClient();
@@ -280,6 +312,7 @@ export default function Home() {
             actions={doNowActions}
             emptyText="Nothing urgent right now"
             now={now}
+            onActionUpdated={loadDashboard}
           />
 
           <DashboardColumn
@@ -288,6 +321,7 @@ export default function Home() {
             actions={otherActiveActions}
             emptyText="No additional active work"
             now={now}
+            onActionUpdated={loadDashboard}
           />
 
           <DashboardColumn
@@ -296,6 +330,7 @@ export default function Home() {
             actions={waitingActions}
             emptyText="Nothing currently waiting"
             now={now}
+            onActionUpdated={loadDashboard}
           />
 
           <DashboardColumn
@@ -304,6 +339,7 @@ export default function Home() {
             actions={completedActions}
             emptyText="No completed work yet"
             now={now}
+            onActionUpdated={loadDashboard}
           />
         </section>
       </div>
@@ -356,12 +392,14 @@ function DashboardColumn({
   actions,
   emptyText,
   now,
+  onActionUpdated,
 }: {
   title: string;
   subtitle: string;
   actions: Action[];
   emptyText: string;
   now: Date;
+  onActionUpdated: () => void;
 }) {
   return (
     <div
@@ -416,11 +454,12 @@ function DashboardColumn({
           }}
         >
           {actions.map((action) => (
-            <ActionCard
-              key={action.id}
-              action={action}
-              now={now}
-            />
+           <ActionCard
+  key={action.id}
+  action={action}
+  now={now}
+  onActionUpdated={onActionUpdated}
+/>
           ))}
         </div>
       )}
@@ -431,10 +470,32 @@ function DashboardColumn({
 function ActionCard({
   action,
   now,
+  onActionUpdated,
 }: {
   action: Action;
   now: Date;
+  onActionUpdated: () => void;
 }) {
+const completeAction = async () => {
+  const supabase = createClient();
+
+  const { error } = await supabase
+    .from("actions")
+    .update({
+      state: "COMPLETE",
+      completed_at: new Date().toISOString(),
+    })
+    .eq("id", action.id);
+
+  if (error) {
+    console.error("Failed to complete action:", error);
+    alert("Could not complete this action.");
+    return;
+  }
+
+  onActionUpdated();
+};
+  
   const priority =
     action.priority?.toUpperCase() ?? "NORMAL";
 
@@ -505,7 +566,7 @@ function ActionCard({
         </div>
       )}
 
-      <div
+            <div
         style={{
           display: "flex",
           flexWrap: "wrap",
@@ -532,10 +593,34 @@ function ActionCard({
           </span>
         )}
       </div>
+
+      {action.state !== "COMPLETE" && (
+        <div
+          style={{
+            marginTop: "14px",
+            paddingTop: "12px",
+            borderTop: "1px solid #eef1f3",
+          }}
+        >
+          <button
+            onClick={completeAction}
+            style={{
+              border: "1px solid #cfd6dc",
+              borderRadius: "8px",
+              background: "#ffffff",
+              padding: "7px 12px",
+              fontSize: "12px",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            ✓ Complete
+          </button>
+        </div>
+      )}
     </div>
   );
 }
-
 function endOfToday() {
   const date = new Date();
   date.setHours(23, 59, 59, 999);
